@@ -1,14 +1,6 @@
 {
 	modules:[
 		{
-		    name:'moduleDemo',
-		    class:'com.apicloud.moduleDemo.APIModuleDemo'
-		},
-		{
-		    name:'listener',
-		    class:'com.apicloud.eventdemo.EasDelegate'
-		},
-		{
 		    name:'MiCO',
 		    class:'com.mxchip.mico.api.MiCOApi'
 		}

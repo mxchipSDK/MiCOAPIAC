@@ -20,8 +20,8 @@ public class MiCOErrorCode {
 	public static JSONObject _MQTT_RECV_NOT_START;// 90007 MQTT message is not
 													// working
 	
-	public static JSONObject _MDNS_ON_TASK;// 90004 MQTT on task
-	public static JSONObject _MDNS_NOT_START;// 90005 MQTT is not working
+	public static JSONObject _MDNS_ON_TASK;// 90008 MDNS on task
+	public static JSONObject _MDNS_NOT_START;// 90009 MDNS is not working
 
 	public MiCOErrorCode() {
 		try {
