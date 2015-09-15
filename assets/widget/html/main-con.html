@@ -5,6 +5,17 @@
 		<meta name="viewport" content="width=device-width,height=device-height,initial-scale=1.0,user-scalable=0">
 		<title>APICloud</title>
 		<script type="text/javascript" src="../script/jquery-2.1.3.js"></script>
+		<style>
+			.ipbutton {
+				width: 150px;
+				height: 25px;
+				background: #D0EEFF;
+				border: 1px solid #99D3F5;
+				border-radius: 4px;
+				color: #0D4A09;
+				margin-top: 10px;
+			}
+		</style>
 		<script type="text/javascript">
 			var micoMqtt;
 			apiready = function() {
@@ -12,7 +23,6 @@
 			};
 
 			function getSSID() {
-				alert(micoMqtt);
 				micoMqtt.getSSID(function(ret, err) {
 					var html;
 					if (ret)
@@ -24,7 +34,14 @@
 			}
 
 			function onlyStopEasyLink() {
-				micoMqtt.onlyStopEasyLink();
+				micoMqtt.onlyStopEasyLink(function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
 			}
 
 			function startEasyLink() {
@@ -53,8 +70,6 @@
 			}
 
 			function startMqtt() {
-				alert("MiCOBindAPI");
-
 				var topic = "d64f517c/c8934691813c/out/read";
 				var host = "api.easylink.io";
 				var port = "1883";
@@ -81,20 +96,71 @@
 			}
 
 			function stopMqtt() {
-				micoMqtt.stopMqtt();
+				micoMqtt.stopMqtt(function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
 			}
 
 			function recvMqttMsg() {
-				micoMqtt.recvMqttMsg();
+				micoMqtt.recvMqttMsg(function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
 			}
 
 			function stopRecvMqttMsg() {
-				micoMqtt.stopRecvMqttMsg();
+				micoMqtt.stopRecvMqttMsg(function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
 			}
 
-			function publishCommand() {
+			function startMDNS() {
+				var servicename = "_easylink._tcp.local.";
+				micoMqtt.startMDNS({
+					servicename:servicename
+				},function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
+			}
+
+			function stopMDNS() {
+				micoMqtt.stopMDNS(function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
+				});
+			}
+
+			function publishCommand(type) {
+				var command;
+				if (1 == type) {
+					command = '{"4":true}';
+				} else {
+					command = '{"4":false}';
+				}
 				var topic = "d64f517c/c8934691813c/in/write";
-				var command = '{"4":true}';
 				var qos = 0;
 				var retained = false;
 				micoMqtt.publishCommand({
@@ -102,6 +168,13 @@
 					command : command,
 					qos : qos,
 					retained : retained
+				}, function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
 				});
 			}
 
@@ -111,6 +184,13 @@
 				micoMqtt.addSubscribe({
 					topic : topic,
 					qos : qos
+				}, function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
 				});
 			}
 
@@ -118,6 +198,13 @@
 				var topic = "d64f517c/c8934691813c/out/err";
 				micoMqtt.rmSubscribe({
 					topic : topic
+				}, function(ret, err) {
+					var html;
+					if (ret)
+						html = "<li><div>ret-->" + JSON.stringify(ret) + "</div></li>";
+					else
+						html = "<li><div>err-->" + JSON.stringify(err) + "</div></li>";
+					$("#messEdits").prepend(html);
 				});
 			}
 
@@ -127,30 +214,36 @@
 		<br/>
 		<br/>
 		<br/>
-		<input type="button" value="获取ssid"  onclick="getSSID();"/>
+		<input class="ipbutton" type="button" value="获取ssid"  onclick="getSSID();"/>
 		<br/>
-		<input type="button" value="开启配网"  onclick="startEasyLink();"/>
+		<input class="ipbutton" type="button" value="开启配网"  onclick="startEasyLink();"/>
 		<br/>
-		<input type="button" value="不发包"  onclick="onlyStopEasyLink();"/>
+		<input class="ipbutton" type="button" value="不发包"  onclick="onlyStopEasyLink();"/>
 		<br/>
-		<input type="button" value="关闭配网"  onclick="stopEasyLink();"/>
+		<input class="ipbutton" type="button" value="关闭配网"  onclick="stopEasyLink();"/>
 		<br/>
 		<br/>
 		<input type="text" value="admin" id="admin"/>
 		<br/>
-		<input type="button" value="打开MQTT"  onclick="startMqtt();"/>
+		<input class="ipbutton" type="button" value="打开MQTT"  onclick="startMqtt();"/>
 		<br/>
-		<input type="button" value="关闭MQTT"  onclick="stopMqtt();"/>
+		<input class="ipbutton" type="button" value="关闭MQTT"  onclick="stopMqtt();"/>
 		<br/>
-		<input type="button" value="开始接收消息"  onclick="recvMqttMsg();"/>
+		<input class="ipbutton" type="button" value="开始接收消息"  onclick="recvMqttMsg();"/>
 		<br/>
-		<input type="button" value="停止接收消息"  onclick="stopRecvMqttMsg();"/>
+		<input class="ipbutton" type="button" value="停止接收消息"  onclick="stopRecvMqttMsg();"/>
 		<br/>
-		<input type="button" value="发送指令"  onclick="publishCommand();"/>
+		<input class="ipbutton" type="button" value="开灯"  onclick="publishCommand(1);"/>
+		<input class="ipbutton" type="button" value="关灯"  onclick="publishCommand(0);"/>
 		<br/>
-		<input type="button" value="增加订阅"  onclick="addSubscribe();"/>
+		<input class="ipbutton" type="button" value="增加订阅"  onclick="addSubscribe();"/>
 		<br/>
-		<input type="button" value="减少订阅"  onclick="rmSubscribe();"/>
+		<input class="ipbutton" type="button" value="减少订阅"  onclick="rmSubscribe();"/>
+		<br/>
+		<br/>
+		<input class="ipbutton" type="button" value="打开MDNS"  onclick="startMDNS();"/>
+		<br/>
+		<input class="ipbutton" type="button" value="关闭MDNS"  onclick="stopMDNS();"/>
 		<div data-role="content">
 			<ul id="messEdits"></ul>
 		</div>
