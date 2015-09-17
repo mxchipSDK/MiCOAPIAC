@@ -8,6 +8,7 @@
 		<meta name="Description" content="">
 		<title>Document</title>
 		<script type="text/javascript" src="../script/mico-ac-0.1.min.js"></script>
+		<script type="text/javascript" src="../script/api.js"></script>
 		<style>
 			body {
 				font-size: 15px;
@@ -33,7 +34,7 @@
 				font-weight: bolder;
 				color: #D23434;
 			}
-			.contentcls{
+			.contentcls {
 				font-size: 15px;
 				color: #0E14D2;
 			}
@@ -41,19 +42,24 @@
 	</head>
 	<body>
 		<br/>
-		<div style="width: 100%; text-align: right"><a href="./user.html">用户管理</a></div>
-		<br/><span class="title">设备配网</span>
+		<div style="width: 100%; text-align: right">
+			<a href="./user.html">用户管理</a>
+		</div>
+		<br/>
+		<span class="title">设备配网</span>
 		<br/>
 		<input class="ipbutton" type="button" onclick="getSSId()" value="获取当前SSID"/>
 		<input class="ipbutton" type="button" onclick="startEasyLink()" value="开始EasyLink"/>
 		<input class="ipbutton" type="button" onclick="stopEasyLink()" value="停止EasyLink"/>
 		<br/>
-		<br/><span class="title">搜索设备</span>
 		<br/>
-		<input class="ipbutton" type="button" onclick="openmDNS()" value="搜索设备"/>
+		<span class="title">搜索设备</span>
+		<br/>
+		<input class="ipbutton" type="button" onclick="startMDNS()" value="搜索设备"/>
 		<input class="ipbutton" type="button" onclick="stopmDNS()" value="停止搜索"/>
 		<br/>
-		<br/><span class="title">控制设备</span>
+		<br/>
+		<span class="title">控制设备</span>
 		<br/>
 		<input class="ipbutton" type="button" onclick="startMqtt()" value="打开MQTT"/>
 		<input class="ipbutton" type="button" onclick="recvMqttMsg()" value="接收消息"/>
@@ -61,31 +67,48 @@
 		<input class="ipbutton" type="button" onclick="stopMqtt()" value="关闭MQTT"/>
 		<input class="ipbutton" type="button" onclick="publishCommand(1)" value="开灯"/>
 		<input class="ipbutton" type="button" onclick="publishCommand(0)" value="关灯"/>
+		<input class="ipbutton" type="button" onclick="addSubscribe()" value="增加订阅"/>
+		<input class="ipbutton" type="button" onclick="rmSubscribe()" value="减少订阅"/>
 		<br/>
 		<br/>
 		<span class="title">日志展示</span>
 		<br/>
-		<p class="contentcls" id="content">将展示后台返回的信息</p>
+		<p class="contentcls" id="content">
+			将展示后台返回的信息
+		</p>
 	</body>
 	<script>
-	
 		var contentid = document.getElementById("content");
+		apiready = function() {
+			MiCO.init(function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
+			});
+		};
+
+		// 获取SSID
+		function getSSId() {
+			MiCO.getSSId(function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
+			});
+		}
+
 		// 打开matt服务
 		function startMqtt() {
 			var host = "api.easylink.io";
-			var username = "";
-			var password = "";
-			var clientID = "clientId-abcdedf";
-			var topic = "d64f517c/c8934691813c/#";
-			MiCO.startMqtt(host, username, password, clientID, topic, function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+			var port = "1883";
+			var username = "admin";
+			var password = "admin";
+			var clientID = "clientId-uryqriwqrqgwfjsdf";
+			var topic = "d64f517c/c8934691813c/out/read";
+			MiCO.startMqtt(host, port, username, password, clientID, topic, function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// 开始接受消息
 		function recvMqttMsg() {
 			MiCO.recvMqttMsg(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
@@ -100,44 +123,53 @@
 				command = '{"4":false,"5":0, "6":100, "7":100}';
 
 			}
-			MiCO.publishCommand(topic, command, function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+			MiCO.publishCommand(topic, command, 0, false, function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
+			});
+		}
+
+		// 添加topic
+		function addSubscribe() {
+			var topic = "d64f517c/c8934691813c/out/err";
+			MiCO.addSubscribe(topic, 0, function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
+			});
+		}
+
+		// 移除topic
+		function rmSubscribe(type) {
+			var topic = "d64f517c/c8934691813c/out/err";
+			MiCO.rmSubscribe(topic, function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// 停止接受信息
 		function stopRecvMqttMsg() {
 			MiCO.stopRecvMqttMsg(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// 关闭mqtt服务
 		function stopMqtt() {
 			MiCO.stopMqtt(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// 打开MDNS
-		function openmDNS() {
+		function startMDNS() {
 			var servName = "_easylink._tcp.local.";
-			MiCO.startmDNS(servName, function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+			MiCO.startMDNS(servName, function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// 关闭MDNS
 		function stopmDNS() {
-			MiCO.stopmDNS(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
-			});
-		}
-
-		// 获取SSID
-		function getSSId() {
-			MiCO.getSSId(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+			MiCO.stopMDNS(function(ret, err) {
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
@@ -146,14 +178,14 @@
 			var wifiname = "mxchip";
 			var wifipsw = "88888888";
 			MiCO.startEasyLink(wifiname, wifipsw, function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 
 		// Stop EasyLink
 		function stopEasyLink() {
 			MiCO.stopEasyLink(function(ret, err) {
-				contentid.innerHTML = JSON.stringify(ret);
+				contentid.innerHTML = "ret = " + JSON.stringify(ret) + " err = " + JSON.stringify(err);
 			});
 		}
 	</script>
