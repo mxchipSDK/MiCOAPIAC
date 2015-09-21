@@ -149,6 +149,7 @@ public class MiCOApi extends UZModule {
 			mdnsApi.startMdnsService(servicename, new JmdnsListener() {
 				@Override
 				public void onJmdnsFind(JSONArray deviceJson) {
+					Log.e("---yd---", deviceJson.toString());
 					if (!deviceJson.equals("")) {
 						try {
 							JSONObject json = new JSONObject();

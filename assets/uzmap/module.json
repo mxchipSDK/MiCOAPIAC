@@ -1,7 +1,7 @@
 {
 	modules:[
 		{
-		    name:'MiCO',
+		    name:'mico',
 		    class:'com.mxchip.mico.api.MiCOApi'
 		}
 	]
